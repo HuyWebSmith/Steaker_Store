@@ -1,0 +1,13 @@
+﻿@model Steaker_Store.Models.Category
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="mb-5">Delete Product</h2>
+<form  asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <p>Category ID: @Model.Id</p>
+    <p>Are you sure you want to delete @Model.Name</p>
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+
+

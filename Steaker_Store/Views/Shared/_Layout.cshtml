@@ -1,0 +1,145 @@
+﻿@using Steaker_Store.Extensions
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]Steaker_Store</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Steaker_Store.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+    rel="stylesheet" />
+</head>
+<body>
+    <header>
+    </header>
+    <nav class="navbar navbar-dark fixed-top navbar-expand-lg font-monospace bg-opacity-25" style="background-image: url(https://png.pngtree.com/thumb_back/fw800/background/20211009/pngtree-geometric-pattern-texture-black-background-image_910366.png); height: 70px; font-weight: 400; font-size: 20px; z-index: 1030;">
+        <div class="container-fluid">
+            <!-- Logo & Brand Name -->
+            <a class="navbar-brand d-flex" href="#">
+                <img src="https://cdn-icons-png.flaticon.com/512/123/123281.png" alt="Logo" width="46" height="40" class="d-inline-block align-text-top me-1">
+                <i class="text-white fs-4 fst-italic " href="" target="_self">Steaker</i>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Dark offcanvas</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-start flex-grow-1 pe-3 mt-lg-0">
+                        <li class="nav-item">   
+                            <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @*<li class="nav-item">
+                            <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>*@           
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Admin
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" asp-area="Admin" asp-controller="MenuItem" asp-action="Index">Menu</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" asp-area="Admin" asp-controller="Categories" asp-action="Index">Category</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                </ul>
+                            </li>
+                        }
+                        <li class="nav-item dropdown">
+                            
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li class="nav-item">
+                                    <a class="nav-link active" asp-area="Admin" asp-controller="MenuItem" asp-action="Index">Menu</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" asp-area="Admin" asp-controller="Categories" asp-action="Index">Category</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="d-flex mt-3 mt-lg-1 me-3" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
+                    <partial name="_LoginPartial" />
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Customer"))
+                    {
+                        
+                        var cart = Context.Session.GetObjectFromJson<ShoppingCart>("Cart") ?? new ShoppingCart();
+                        
+                        <form class="d-flex ms-2">
+                            <a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-outline-light position-relative pt-2">
+                                <i class="bi-cart-fill me-1"></i>
+                                Cart
+                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
+                                    @cart.TotalItems()
+                                </span>
+                            </a>
+                        </form>
+
+                    }
+                  
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container " style="padding-top: 70px;padding-bottom: 500px;">
+        <main role="main" class="pb-3 " style="">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="card text-bg-dark object-fit-cover overflow-hidden" style="height: 470px; font-size: 20px; line-height: 20px;">
+            <img src="https://static.vecteezy.com/system/resources/previews/046/451/714/non_2x/grilled-steak-sizzling-on-open-flames-seasoned-with-herbs-and-spices-perfect-for-barbecue-food-and-culinary-themes-free-photo.jpg" class="card-img opacity-25" alt="...">
+            <div class="card-img-overlay">
+                <h5 class="card-title d-flex fs-4 fst-italic">
+                    <img src="https://cdn-icons-png.flaticon.com/512/123/123281.png" alt="Logo" width="46" height="40" class="d-inline-block align-text-top me-1">
+                    Steaker
+                </h5>
+                <p class="card-text"><i class="fa-solid fa-location-dot me-2" style="color: #ffffff;"></i>Địa chỉ: [Số nhà, Đường, Thành phố].</p>
+                <p class="card-text"><i class="fa-solid fa-phone me-2" style="color: #ffffff;"></i>Hotline: [Số điện thoại].</p>
+                <p class="card-text"><i class="fa-regular fa-envelope me-2" style="color: #ffffff;"></i>Email: [Email hỗ trợ].</p>
+                <p class="card-text"><i class="fa-solid fa-clock me-2" style="color: #ffffff;"></i>Giờ mở cửa: 10:00 - 22:00 (Hằng ngày).</p>
+                <p class="card-text">Theo dõi chúng tôi trên.</p>
+                <div class="d-flex gap-3 mb-2">
+                    <i class="fa-brands fa-twitter"></i>
+                    <i class="fa-brands fa-facebook"></i>
+                    <i class="fa-brands fa-instagram"></i>
+                    <i class="fa-brands fa-github"></i>
+                </div>
+                <p class="card-text">Hình thức thanh toán.</p>
+                <p class="card-text">Chính sách Online Steak.</p>
+                <p class="card-text"><small>Last updated 3 mins ago</small></p>
+            </div>
+        </div>
+    </footer>
+
+    @* <div style="height:200px; background-color:black;"></div> *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,29 @@
+﻿@model Steaker_Store.Models.Order
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">🛒 Checkout</h2>
+
+    <div class="card shadow-lg p-4">
+        <form asp-action="Checkout" method="post">
+            <!-- Địa chỉ giao hàng -->
+            <div class="mb-3">
+                <label asp-for="ShippingAddress" class="form-label fw-bold">📍 Shipping Address</label>
+                <input asp-for="ShippingAddress" class="form-control" placeholder="Enter your address..." required />
+            </div>
+
+            <!-- Ghi chú đơn hàng -->
+            <div class="mb-3">
+                <label asp-for="Notes" class="form-label fw-bold">📝 Notes</label>
+                <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any special requests?"></textarea>
+            </div>
+
+            <!-- Nút xác nhận đơn hàng -->
+            <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                ✅ Place Order
+            </button>
+        </form>
+    </div>
+</div>

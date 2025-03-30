@@ -1,0 +1,73 @@
+﻿@model Steaker_Store.Models.MenuItem
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Edit Product";
+}
+@{
+    Layout = "/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="mb-5">Edit Product</h2>
+<form asp-action="Update" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input name="Name" value="@Model.Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price">Price</label>
+        <input name="Price" value="@Model.Price" class="form-control"/>
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea name="Description"  class="form-control">@Model.Description</textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="CategoryId">Chọn danh mục:</label>
+        @{
+            var categories = ViewBag.Categories as SelectList;
+        }
+        <select name="CategoryId" id="CategoryId" class="form-control">
+            <option value="">-- Chọn danh mục --</option>
+            @if (categories != null)
+            {
+                @foreach (var item in categories)
+                {
+                    <option value="@item.Value" @(item.Value == Model.CategoryId.ToString() ? "selected" : "")>
+                        @item.Text
+                    </option>
+                }
+            }
+        </select>
+    </div>
+    <div class="form-group mb-3">
+        <label for="imageUrl">Product Image</label>
+        <input type="file" name="imageUrl" class="form-control" id="imageInput" multiple accept="image/*" />
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <button asp-action="Index" class="btn btn-secondary">Back to List</button>
+</form>
+<div class="col-8">
+    <img src="@Model.ImageUrl" alt="Product Image" style="max-width:200px;"
+         id="previewImage" />
+</div>
+
+<script>
+
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById("previewImage")
+                    img.src = e.target.result
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>

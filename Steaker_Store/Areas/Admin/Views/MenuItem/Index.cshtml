@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Steaker_Store.Models.MenuItem>
+
+@{
+    ViewData["Title"] = "Menu Items";
+    Layout = "/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary">🍽️ Menu Items</h2>
+        <a href="/Admin/MenuItem/Add" class="btn btn-success">➕ Add New Item</a>
+    </div>
+
+    <table class="table table-hover table-bordered shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Price (VND)</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td>
+                        <img src="@item.ImageUrl" alt="@item.Name" class="img-thumbnail" style="width: 80px; height: 80px;">
+                    </td>
+                    <td>@(item.Category != null ? item.Category.Name : "No Category")</td>
+                    <td>
+                        <a href="/ShoppingCart/Detail/@item.Id" class="btn btn-primary btn-sm">👁️ View</a>
+                        <a href="/Admin/MenuItem/Update/@item.Id" class="btn btn-warning btn-sm">✏️ Edit</a>
+                        <a href="/Admin/MenuItem/Delete/@item.Id" class="btn btn-danger btn-sm">🗑️ Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

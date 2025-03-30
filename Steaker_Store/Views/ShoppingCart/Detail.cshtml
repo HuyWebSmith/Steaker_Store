@@ -1,0 +1,80 @@
+﻿@model MenuItem
+
+<style>
+    .carousel-item img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 10px; /* Bo góc ảnh */
+    }
+
+    .product-container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .price {
+        font-size: 24px;
+        font-weight: bold;
+        color: #d9534f;
+    }
+
+    .btn-add {
+        background-color: #ff6600;
+        border: none;
+    }
+
+        .btn-add:hover {
+            background-color: #cc5200;
+        }
+</style>
+
+<div class="container product-container mt-5">
+    <div class="row">
+        <!-- Khu vực Carousel -->
+        <div class="col-md-6">
+            <div id="productCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    @if (Model.Images != null && Model.Images.Count > 0)
+                    {
+                        @for (int i = 0; i < Model.Images.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="@Model.Images[i].Url" class="d-block w-100" alt="Product Image">
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="carousel-item active">
+                            <img src="/images/no-image.jpg" class="d-block w-100" alt="No Image Available">
+                        </div>
+                    }
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Thông tin sản phẩm -->
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h2 class="fw-bold">@Model.Name</h2>
+            <p class="price">@Model.Price.ToString("C")</p>
+            <p class="text-muted">@Model.Description</p>
+
+            <form action="/ShoppingCart/AddToCart" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+
+                <div class="d-flex align-items-center">
+                    <input type="number" name="quantity" value="1" min="1" class="form-control w-25 me-2">
+                    <button type="submit" class="btn btn-add text-white px-4">🛒 Add to Cart</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

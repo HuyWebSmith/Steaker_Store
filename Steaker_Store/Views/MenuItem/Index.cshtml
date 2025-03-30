@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Steaker_Store.Models.MenuItem>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-5">Menu</h2>
+<table class="table table-bordered table-striped" >
+<thead> 
+    <tr> 
+        <th>ID</th> 
+        <th>Name</th> 
+        <th>Price</th> 
+        <th>Description</th> 
+        <th>Food Image</th> 
+        <th>Categories</th> 
+        <th>Actions</th> 
+    </tr> 
+</thead> 
+<tbody>
+        @foreach (var menuItem in Model)
+        {
+        <tr> 
+        <td>@menuItem.Id</td> 
+        <td>@menuItem.Name</td> 
+        <td>$@menuItem.Price.ToString("#,##0")</td> 
+        <td>@menuItem.Description</td> 
+        <td><img class="ms-5" src="@menuItem.ImageUrl" style="width:150px;height:95px; object-fit:cover; margin-left:-20px;"/></td> 
+        <td>@menuItem.Category?.Name</td> 
+        <td>
+            <a  asp-action="Display" asp-route-id="@menuItem.Id" class="btn btn-success">View</a> |
+            <a asp-action="Update" asp-route-id="@menuItem.Id" class="btn btn-info">Edit</a> |
+            <a asp-action="Delete" asp-route-id="@menuItem.Id" class="btn btn-danger">Delete</a>
+        </td>
+        <td><br></td>
+        </tr> 
+        
+} 
+</tbody> 
+</table>

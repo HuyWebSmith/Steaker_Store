@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Steaker_Store.Models.Category>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="mb-5">Category</h2>
+<table class="table table-bordered table-striped" >
+<thead> 
+    <tr> 
+        <th>ID</th> 
+        <th>Name</th> 
+        <th>Actions</th> 
+    </tr> 
+</thead> 
+<tbody>
+        @foreach (var categories in Model)
+        {
+        <tr> 
+        <td>@categories.Id</td> 
+        <td>@categories.Name</td> 
+        <td>
+                    <a asp-area="Admin" asp-action="Display" asp-route-id="@categories.Id" class="btn btn-success">View</a> |
+                    <a asp-area="Admin" asp-action="Update" asp-route-id="@categories.Id" class="btn btn-info">Edit</a> |
+                    <a asp-area="Admin" asp-action="Delete" asp-route-id="@categories.Id" class="btn btn-danger">Delete</a>
+        </td>
+        <td><br></td>
+        </tr> 
+        
+} 
+</tbody> 
+</table>
