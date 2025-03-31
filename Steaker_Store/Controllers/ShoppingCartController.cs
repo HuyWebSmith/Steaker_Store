@@ -51,7 +51,7 @@ namespace Steaker_Store.Controllers
             HttpContext.Session.Remove("Cart");
             return View("OrderCompleted", order.Id);
         }
-        [Authorize(Roles = SD.Role_Customer)]
+
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId, int quantity)
         {
@@ -77,21 +77,21 @@ namespace Steaker_Store.Controllers
 
             return Redirect(Request.Headers["Referer"].ToString()); // Quay lại trang trước đó
         }
-        [Authorize(Roles = SD.Role_Customer)]
+
         public IActionResult Index()
         {
             var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart") ?? new ShoppingCart();
             return View(cart);
         }
         // Các actions khác... 
-        [Authorize(Roles = SD.Role_Customer)]
+
         private async Task<MenuItem> GetProductFromDatabase(int productId)
         {
             // Truy vấn cơ sở dữ liệu để lấy thông tin sản phẩm 
             var product = await _menuItemRepository.GetByIdAsync(productId);
             return product;
         }
-        [Authorize(Roles = SD.Role_Customer)]
+
         public IActionResult RemoveFromCart(int productId)
         {
             var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart");
@@ -104,13 +104,13 @@ namespace Steaker_Store.Controllers
             }
             return RedirectToAction("Index");
         }
-        [Authorize(Roles = SD.Role_Customer)]
+
         public IActionResult RemoveAllFromCart()
         {
             HttpContext.Session.Remove("Cart"); // Xóa giỏ hàng khỏi session
             return RedirectToAction("Index"); // Quay lại trang giỏ hàng
         }
-        [Authorize(Roles = SD.Role_Customer)]
+
         [HttpPost]
         public IActionResult UpdateQuantity(int productId, int quantity)
         {
@@ -126,7 +126,7 @@ namespace Steaker_Store.Controllers
             }
             return RedirectToAction("Index");
         }
-        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Customer)]
+
         public IActionResult Detail(int id)
         {
             var product = _context.Menus

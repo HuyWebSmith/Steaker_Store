@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Steaker_Store.Models;
 using Steaker_Store.Repositories;
@@ -10,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 
 // Đặt trước AddControllersWithViews(); 
 builder.Services.AddDistributedMemoryCache();
@@ -23,10 +26,13 @@ builder.Services.AddSession(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => { 
+    options.SignIn.RequireConfirmedEmail = true;
+})
     .AddDefaultTokenProviders()
     .AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -57,6 +63,8 @@ builder.Services.AddAuthentication()
          // Thiết lập đường dẫn Facebook chuyển hướng đến
          facebookOptions.CallbackPath = "/signin-facebook";
      });
+
+
 
 var app = builder.Build();
 
@@ -89,7 +97,7 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-app.MapStaticAssets();
+app.MapStaticAssets();  
 
 app.MapControllerRoute(
     name: "default",

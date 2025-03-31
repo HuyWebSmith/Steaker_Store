@@ -152,6 +152,7 @@ namespace Steaker_Store.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+
                     _logger.LogInformation("User created a new account with password.");
 
                     if (!String.IsNullOrEmpty(Input.Role))
