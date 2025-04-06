@@ -39,19 +39,23 @@ namespace Steaker_Store.Controllers
             var user = await _userManager.GetUserAsync(User);
             order.UserId = user.Id;
             order.OrderDate = DateTime.UtcNow;
+            order.OrderCode = Guid.NewGuid().ToString();
+
             order.TotalPrice = cart.Items.Sum(i => i.Price * i.Quantity);
+            order.Status = "Đang xử lý";
             order.OrderDetails = cart.Items.Select(i => new OrderDetail
             {
                 MenuItemId = i.ProductId,
                 Quantity = i.Quantity,
                 Price = i.Price
+
             }).ToList();
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
             HttpContext.Session.Remove("Cart");
             return View("OrderCompleted", order.Id);
         }
-
+        [Authorize(Roles = SD.Role_Customer)]
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId, int quantity)
         {
@@ -91,7 +95,7 @@ namespace Steaker_Store.Controllers
             var product = await _menuItemRepository.GetByIdAsync(productId);
             return product;
         }
-
+        [Authorize(Roles = SD.Role_Customer)]
         public IActionResult RemoveFromCart(int productId)
         {
             var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart");

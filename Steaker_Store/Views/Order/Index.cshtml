@@ -1,0 +1,64 @@
+﻿@model List<Steaker_Store.Models.Order>
+
+@{
+    ViewData["Title"] = "Danh Sách Đơn Hàng";
+}
+
+<h2>Danh Sách Đơn Hàng</h2>
+
+<table class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Mã đơn</th>
+            <th>Khách hàng</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+            <th>Địa chỉ giao hàng</th>
+            <th>Ghi chú</th>
+            <th>Chi tiết</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@(order.ApplicationUser != null ? order.ApplicationUser.FullName : "Khách vãng lai")</td>
+                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@order.TotalPrice.ToString("C")</td>
+                <td>
+                    @(string.IsNullOrEmpty(order.TableNumber) ? order.ShippingAddress : "Bàn " + order.TableNumber)
+                </td>
+                <td>@order.Notes</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-info btn-sm">Xem</a>
+                </td>
+                <td>
+
+                    <form asp-controller="Payment" asp-action="CreatePaymentUrlVnpay" method="post" class="mb-3">
+                        <input type="hidden" name="Name" value="@User.Identity.Name" />
+                        <input type="hidden" name="Amount" value="@order.TotalPrice" />
+                        <input type="hidden" name="OrderDescription" value="Thanh toán đặt hàng qua VNPAY tại Steaker" />
+                        <input type="hidden" name="OrderType" value="other" />
+                        <button class="btn btn-danger" type="submit">Pay with VNPAY</button>
+
+                      
+                    </form>
+                    <form asp-controller="Payment" asp-action="CreatePaymentUrl" method="post">
+                        <input type="hidden" name="FullName" value="@User.Identity.Name" />
+                        <input type="hidden" name="Amount" value="@order.TotalPrice" />
+                        <input type="hidden" name="OrderId" value="@Guid.NewGuid().ToString()" />
+                        <input type="hidden" name="OrderInfo" value="Thanh toán đặt hàng qua Momo tại Steaker" />
+                        <button class="btn btn-danger" name="PayUrl" type="submit">Pay with MoMo</button>
+
+                        @* <input type="hidden" name="Amount" value="@order.TotalPrice" /> *@
+                        @* <input type="hidden" name="OrderId" value="@Guid.NewGuid().ToString()" /> *@
+                        @* <input type="hidden" name="OrderInfo" value="Thanh toán Momo cho đơn hàng tại Steaker Store" /> *@
+                        @* <input type="hidden" name="FullName" value="SteakerStore" /> *@
+                        @* <button type="submit" name="PayUrl" class="btn btn-danger">Pay with Momo</button> *@
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

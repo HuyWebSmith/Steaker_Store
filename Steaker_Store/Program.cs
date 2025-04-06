@@ -3,12 +3,22 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Steaker_Store.Models;
+using Steaker_Store.Models.Momo;
+using Steaker_Store.Models.Vnpay;
 using Steaker_Store.Repositories;
+using Steaker_Store.Services.Momo;
+using Steaker_Store.Services.VnPay;
 using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+// Api MoMo
+builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
+builder.Services.AddScoped<IMomoService, MomoService>();
 
+
+// sql
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -44,6 +54,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IMenuItemRepository, EFMeunuItemRepository>();
 builder.Services.AddScoped<ICategoryRepository, EFCategoryRepository>();
+//// Api VNPAY
+//builder.Services.Configure<VnpaySettings>(builder.Configuration.GetSection("Vnpay"));
+
 
 //OAuth Google
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -64,7 +77,8 @@ builder.Services.AddAuthentication()
          facebookOptions.CallbackPath = "/signin-facebook";
      });
 
-
+//Api VnPay
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 var app = builder.Build();
 

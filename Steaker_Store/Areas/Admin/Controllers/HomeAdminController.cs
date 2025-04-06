@@ -51,7 +51,11 @@ namespace Steaker_Store.Areas.Admin.Controllers
 
             var roles = _roleManager.Roles?.Select(r => r.Name).ToList() ?? new List<string>(); // Tránh null
             var userRoles = await _userManager.GetRolesAsync(user) ?? new List<string>(); // Tránh null
-
+            if (userRoles.Contains("Admin"))
+            {
+                TempData["Error"] = "Bạn không thể chỉnh sửa vai trò của tài khoản Admin.";
+                return RedirectToAction("ManageRoles");
+            }
             var model = new EditRoleViewModel
             {
                 UserId = user.Id,

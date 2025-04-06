@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Steaker_Store.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Steaker_Store.Models
@@ -10,7 +11,7 @@ namespace Steaker_Store.Models
         public string? UserId { get; set; } // Null nếu là khách vãng lai
         public DateTime OrderDate { get; set; } = DateTime.Now;
         public decimal TotalPrice { get; set; }
-
+        public string? OrderCode { get; set; } 
         public string? TableNumber { get; set; } // Số bàn nếu ăn tại quán
         public string? ShippingAddress { get; set; } // Địa chỉ giao hàng (nếu có)
         public string? Notes { get; set; }
@@ -20,5 +21,6 @@ namespace Steaker_Store.Models
         public ApplicationUser? ApplicationUser { get; set; } // Liên kết với ApplicationUser
 
         public List<OrderDetail>? OrderDetails { get; set; }
+        public string Status { get; set; }
     }
 }

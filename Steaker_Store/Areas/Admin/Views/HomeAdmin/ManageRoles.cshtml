@@ -26,5 +26,10 @@
                 </td>
             </tr>
         }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
     </tbody>
 </table>

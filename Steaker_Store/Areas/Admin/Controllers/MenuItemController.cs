@@ -9,7 +9,8 @@ using Steaker_Store.Repositories;
 namespace Steaker_Store.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = $"{SD.Role_Admin},{SD.Role_Employee}")]
+
     public class MenuItemController : Controller
     {
         private readonly IMenuItemRepository _menuItemRepository;
@@ -20,7 +21,7 @@ namespace Steaker_Store.Areas.Admin.Controllers
                 _menuItemRepository = menuItemRepository;
                 _categoryRepository = categoryRepository;
             }
-            
+           
             public async Task<IActionResult> Index()
             {
             var menuItem = await _menuItemRepository.GetAllAsync();
