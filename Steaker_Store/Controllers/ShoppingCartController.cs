@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Steaker_Store.Areas.Admin.Models;
+using Steaker_Store.Enums;
 using Steaker_Store.Extensions;
 using Steaker_Store.Models;
 using Steaker_Store.Repositories;
@@ -24,35 +25,45 @@ namespace Steaker_Store.Controllers
         [Authorize(Roles = SD.Role_Customer)]
         public IActionResult Checkout()
         {
-            return View(new Order());
+            return View(new CheckoutViewModel());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(Order order)
+        [Authorize(Roles = SD.Role_Customer)]
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
         {
             var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart");
-            if (cart == null || !cart.Items.Any())
+            if (!ModelState.IsValid || cart == null || !cart.Items.Any())
             {
-                // Xử lý giỏ hàng trống... 
-                return RedirectToAction("Index");
+                TempData["ErrorMessage"] = "Cart is empty or information is missing.";
+                return View(model);
             }
+
             var user = await _userManager.GetUserAsync(User);
-            order.UserId = user.Id;
-            order.OrderDate = DateTime.UtcNow;
-            order.OrderCode = Guid.NewGuid().ToString();
-
-            order.TotalPrice = cart.Items.Sum(i => i.Price * i.Quantity);
-            order.Status = "Đang xử lý";
-            order.OrderDetails = cart.Items.Select(i => new OrderDetail
+            var order = new Order
             {
-                MenuItemId = i.ProductId,
-                Quantity = i.Quantity,
-                Price = i.Price
+                UserId = user.Id,
+                OrderDate = DateTime.UtcNow,
+                OrderCode = DateTime.Now.Ticks.ToString(),
+                ShippingAddress = model.ShippingAddress,
+                Notes = model.Notes,
+                TotalPrice = cart.Items.Sum(i => i.Price * i.Quantity),
+                Status = PaymentStatusEnum.ChuaThanhToan,
+                FullName = model.FullName,
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email,
+                OrderDetails = cart.Items.Select(i => new OrderDetail
+                {
+                    MenuItemId = i.ProductId,
+                    Quantity = i.Quantity,
+                    Price = i.Price
+                }).ToList()
+            };
 
-            }).ToList();
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
             HttpContext.Session.Remove("Cart");
+
             return View("OrderCompleted", order.Id);
         }
         [Authorize(Roles = SD.Role_Customer)]

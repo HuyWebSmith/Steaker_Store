@@ -18,11 +18,12 @@ namespace Steaker_Store.Controllers
     {
         private IMomoService _momoService;
         private readonly IVnPayService _vnPayService;
-
-        public PaymentController(IMomoService momoService, IVnPayService vnPayService)
+        private readonly ApplicationDbContext _context;
+        public PaymentController(IMomoService momoService, IVnPayService vnPayService, ApplicationDbContext context)
         {
             _momoService = momoService;
             _vnPayService = vnPayService;
+            _context = context;
         }
 
         [HttpPost]
@@ -41,9 +42,15 @@ namespace Steaker_Store.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreatePaymentUrlVnpay(PaymentInformationModel model)
+        public IActionResult CreatePaymentUrlVnpay(PaymentInformationModel model, string orderCode)
         {
-            var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
+            var order = _context.Orders.FirstOrDefault(o => o.OrderCode == orderCode);
+            if (order == null)
+            {
+                Console.WriteLine("Không tìm thấy đơn hàng với OrderCode: " + orderCode);
+                return NotFound("Đơn hàng không tồn tại.");
+            }
+            var url = _vnPayService.CreatePaymentUrl(model, HttpContext, order.OrderCode);
 
             return Redirect(url);
         }

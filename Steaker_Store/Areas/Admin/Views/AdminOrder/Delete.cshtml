@@ -1,0 +1,40 @@
+﻿@model Steaker_Store.Models.Order
+
+@{
+    ViewData["Title"] = "Xác nhận xóa đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center">Xác nhận xóa đơn hàng</h2>
+
+<div class="text-center">
+    <h4>Bạn có chắc chắn muốn xóa đơn hàng này?</h4>
+    <table class="table">
+        <tr>
+            <th>Mã đơn</th>
+            <td>@Model.Id</td>
+        </tr>
+        <tr>
+            <th>Khách hàng</th>
+            <td>@(Model.ApplicationUser != null ? Model.ApplicationUser.FullName : "Khách vãng lai")</td>
+        </tr>
+        <tr>
+            <th>Ngày đặt</th>
+            <td>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+        </tr>
+        <tr>
+            <th>Tổng tiền</th>
+            <td>@Model.TotalPrice.ToString("C")</td>
+        </tr>
+        <tr>
+            <th>Địa chỉ giao hàng</th>
+            <td>@Model.ShippingAddress</td>
+        </tr>
+    </table>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

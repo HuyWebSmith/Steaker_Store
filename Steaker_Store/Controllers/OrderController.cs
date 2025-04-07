@@ -46,5 +46,47 @@ namespace Steaker_Store.Controllers
 
             return View(order);
         }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Lấy ID của user đang đăng nhập
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            // Lấy đơn hàng cần xóa
+            var order = await _context.Orders
+                .Where(o => o.UserId == userId && o.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order); // Hiển thị view xác nhận xóa
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Lấy ID của user đang đăng nhập
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var order = await _context.Orders
+                .Where(o => o.UserId == userId && o.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            // Xóa đơn hàng
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index)); // Quay lại trang danh sách đơn hàng
+        }
+
     }
 }

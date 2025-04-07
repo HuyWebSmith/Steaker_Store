@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Steaker_Store.Areas.Admin.Models;
 using Steaker_Store.Models;
 using Steaker_Store.Models.Momo;
 using Steaker_Store.Services.Momo;
 using Steaker_Store.Services.VnPay;
+using System;
 using System.Threading.Tasks;
 
 [Authorize(Roles = SD.Role_Customer)]
@@ -52,7 +54,30 @@ public class CheckoutController : Controller
     public IActionResult PaymentCallbackVnpay()
     {
         var response = _vnPayService.PaymentExecute(Request.Query);
+        // Giả sử bạn lưu OrderId vào trong model khi thanh toán
+        if (response != null && !string.IsNullOrEmpty(response.OrderId))
+        {
 
-        return Json(response);
+            // Tìm đơn hàng trong DB và cập nhật trạng thái
+            using (var scope = HttpContext.RequestServices.CreateScope())
+            {
+                var orderId = response.OrderId;
+
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var order = db.Orders.FirstOrDefault(o => o.OrderCode == orderId);
+
+
+
+                if (order != null)
+                {
+                    order.Status = response.Success
+                        ? Steaker_Store.Enums.PaymentStatusEnum.DaThanhToan
+                        : Steaker_Store.Enums.PaymentStatusEnum.ThanhToanThatBai;
+
+                    db.SaveChanges();
+                }
+            }
+        }
+        return View("PaymentResult", response);
     }
 }

@@ -27,7 +27,7 @@
                                        value="@item.Quantity" min="1" onchange="this.form.submit()">
                             </form>
                         </td>
-                        <td>@item.Price.ToString("C")</td>
+                        <td>@item.Price.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
                         <td>
                             @( (item.Price * item.Quantity).ToString("C", new System.Globalization.CultureInfo("vi-VN")) )
                         </td>
@@ -40,7 +40,7 @@
                 }
             </tbody>
         </table>
-        <h4>Total: <span class="fw-bold text-danger">@Model.Items.Sum(i => i.Price * i.Quantity).ToString("C")</span></h4>
+        <h4>Total: <span class="fw-bold text-danger">@Model.Items.Sum(i => i.Price * i.Quantity).ToString("C", new System.Globalization.CultureInfo("vi-VN"))</span></h4>
         <div class="d-flex gap-2">
             <div class="text-end">
                 

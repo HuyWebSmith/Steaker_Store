@@ -1,0 +1,55 @@
+﻿@model List<Steaker_Store.Models.Order>
+
+@{
+    ViewData["Title"] = "Danh Sách Đơn Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mb-4">Danh Sách Đơn Hàng</h2>
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Mã đơn</th>
+            <th>Khách hàng</th>
+            <th>Ngày đặt</th> 
+            <th>Trạng thái</th>
+            <th>Tổng tiền</th>
+            <th>Thao tác</th> <!-- Added a new column for delete button -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@(order.ApplicationUser != null ? order.ApplicationUser.FullName : "Khách vãng lai")</td>
+                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    @switch (order.Status)
+                    {
+                        case Steaker_Store.Enums.PaymentStatusEnum.DaThanhToan:
+                            <span class="badge bg-success">Đã thanh toán</span>
+                            break;
+                        case Steaker_Store.Enums.PaymentStatusEnum.ThanhToanThatBai:
+                            <span class="badge bg-danger">Thất bại</span>
+                            break;
+                        default:
+                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                            break;
+                    }
+                </td>
+                <td>@order.TotalPrice.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
+
+                <td>
+                    <!-- Nút Xem: Điều hướng đến trang Chi tiết đơn hàng -->
+                    <a href="/Admin/AdminOrder/Details/@order.Id" class="btn btn-info btn-sm">Xem</a>
+
+                    <a href="@Url.Action("Delete", "AdminOrder", new { id = order.Id })" class="btn btn-danger btn-sm">Xóa</a>
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

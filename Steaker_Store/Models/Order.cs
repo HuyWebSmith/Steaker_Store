@@ -15,12 +15,15 @@ namespace Steaker_Store.Models
         public string? TableNumber { get; set; } // Số bàn nếu ăn tại quán
         public string? ShippingAddress { get; set; } // Địa chỉ giao hàng (nếu có)
         public string? Notes { get; set; }
+        public string? FullName { get; set; }
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [ForeignKey("UserId")]
         [ValidateNever]
         public ApplicationUser? ApplicationUser { get; set; } // Liên kết với ApplicationUser
 
         public List<OrderDetail>? OrderDetails { get; set; }
-        public string Status { get; set; }
+        public PaymentStatusEnum Status { get; set; } = PaymentStatusEnum.ChuaThanhToan;
     }
 }

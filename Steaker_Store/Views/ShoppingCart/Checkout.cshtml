@@ -1,29 +1,48 @@
-﻿@model Steaker_Store.Models.Order
+﻿@model Steaker_Store.Models.CheckoutViewModel
 @{
     ViewData["Title"] = "Checkout";
 }
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">🛒 Checkout</h2>
+    <h2 class="text-center mb-4">🛒 Checkout Information</h2>
 
-    <div class="card shadow-lg p-4">
+    <div class="card shadow-lg rounded-4 p-4">
         <form asp-action="Checkout" method="post">
-            <!-- Địa chỉ giao hàng -->
-            <div class="mb-3">
-                <label asp-for="ShippingAddress" class="form-label fw-bold">📍 Shipping Address</label>
-                <input asp-for="ShippingAddress" class="form-control" placeholder="Enter your address..." required />
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="FullName" class="form-label fw-bold">👤 Full Name</label>
+                    <input asp-for="FullName" class="form-control" placeholder="John Doe" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="PhoneNumber" class="form-label fw-bold">📞 Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="0123456789" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-12">
+                    <label asp-for="Email" class="form-label fw-bold">📧 Email</label>
+                    <input asp-for="Email" class="form-control" placeholder="example@email.com" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-12">
+                    <label asp-for="ShippingAddress" class="form-label fw-bold">📍 Shipping Address</label>
+                    <input asp-for="ShippingAddress" class="form-control" placeholder="123 Main Street..." />
+                    <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                </div>
+                <div class="col-md-12">
+                    <label asp-for="Notes" class="form-label fw-bold">📝 Notes</label>
+                    <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any special request..."></textarea>
+                </div>
             </div>
 
-            <!-- Ghi chú đơn hàng -->
-            <div class="mb-3">
-                <label asp-for="Notes" class="form-label fw-bold">📝 Notes</label>
-                <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any special requests?"></textarea>
-            </div>
-
-            <!-- Nút xác nhận đơn hàng -->
-            <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+            <button type="submit" class="btn btn-success w-100 mt-4 fw-bold py-2 rounded-pill">
                 ✅ Place Order
             </button>
         </form>
+       
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

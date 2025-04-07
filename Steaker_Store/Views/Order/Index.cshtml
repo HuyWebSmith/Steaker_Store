@@ -4,9 +4,9 @@
     ViewData["Title"] = "Danh Sách Đơn Hàng";
 }
 
-<h2>Danh Sách Đơn Hàng</h2>
+<h2 class="text-center mb-4">Danh Sách Đơn Hàng</h2>
 
-<table class="table table-bordered">
+<table class="table table-striped table-bordered">
     <thead class="thead-dark">
         <tr>
             <th>Mã đơn</th>
@@ -15,7 +15,9 @@
             <th>Tổng tiền</th>
             <th>Địa chỉ giao hàng</th>
             <th>Ghi chú</th>
-            <th>Chi tiết</th>
+            <th>Trạng thái</th>
+            <th>Thanh toán</th>
+            <th>Hành động</th> <!-- Added a new column for delete button -->
         </tr>
     </thead>
     <tbody>
@@ -25,37 +27,50 @@
                 <td>@order.Id</td>
                 <td>@(order.ApplicationUser != null ? order.ApplicationUser.FullName : "Khách vãng lai")</td>
                 <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@order.TotalPrice.ToString("C")</td>
+                <td>@order.TotalPrice.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
                 <td>
                     @(string.IsNullOrEmpty(order.TableNumber) ? order.ShippingAddress : "Bàn " + order.TableNumber)
                 </td>
                 <td>@order.Notes</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-info btn-sm">Xem</a>
+                    @switch (order.Status)
+                    {
+                        case Steaker_Store.Enums.PaymentStatusEnum.DaThanhToan:
+                            <span class="badge bg-success">Đã thanh toán</span>
+                            break;
+                        case Steaker_Store.Enums.PaymentStatusEnum.ThanhToanThatBai:
+                            <span class="badge bg-danger">Thất bại</span>
+                            break;
+                        default:
+                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                            break;
+                    }
                 </td>
                 <td>
+                    <div class="d-flex justify-content-center gap-3">
+                        <form asp-controller="Payment" asp-action="CreatePaymentUrlVnpay" method="post" class="mb-3">
+                            <input type="hidden" name="Name" value="@User.Identity.Name" />
+                            <input type="hidden" name="Amount" value="@order.TotalPrice" />
+                            <input type="hidden" name="OrderDescription" value="Thanh toán đặt hàng qua VNPAY tại Steaker" />
+                            <input type="hidden" name="OrderType" value="other" />
+                            <input type="hidden" name="OrderCode" value="@order.OrderCode" />
+                            <button class="btn btn-danger px-4 rounded-pill fw-bold" type="submit">Thanh toán VNPAY</button>
+                        </form>
 
-                    <form asp-controller="Payment" asp-action="CreatePaymentUrlVnpay" method="post" class="mb-3">
-                        <input type="hidden" name="Name" value="@User.Identity.Name" />
-                        <input type="hidden" name="Amount" value="@order.TotalPrice" />
-                        <input type="hidden" name="OrderDescription" value="Thanh toán đặt hàng qua VNPAY tại Steaker" />
-                        <input type="hidden" name="OrderType" value="other" />
-                        <button class="btn btn-danger" type="submit">Pay with VNPAY</button>
-
-                      
-                    </form>
-                    <form asp-controller="Payment" asp-action="CreatePaymentUrl" method="post">
-                        <input type="hidden" name="FullName" value="@User.Identity.Name" />
-                        <input type="hidden" name="Amount" value="@order.TotalPrice" />
-                        <input type="hidden" name="OrderId" value="@Guid.NewGuid().ToString()" />
-                        <input type="hidden" name="OrderInfo" value="Thanh toán đặt hàng qua Momo tại Steaker" />
-                        <button class="btn btn-danger" name="PayUrl" type="submit">Pay with MoMo</button>
-
-                        @* <input type="hidden" name="Amount" value="@order.TotalPrice" /> *@
-                        @* <input type="hidden" name="OrderId" value="@Guid.NewGuid().ToString()" /> *@
-                        @* <input type="hidden" name="OrderInfo" value="Thanh toán Momo cho đơn hàng tại Steaker Store" /> *@
-                        @* <input type="hidden" name="FullName" value="SteakerStore" /> *@
-                        @* <button type="submit" name="PayUrl" class="btn btn-danger">Pay with Momo</button> *@
+                        <form asp-controller="Payment" asp-action="CreatePaymentUrl" method="post" class="mb-3">
+                            <input type="hidden" name="FullName" value="@User.Identity.Name" />
+                            <input type="hidden" name="Amount" value="@order.TotalPrice" />
+                            <input type="hidden" name="OrderId" value="@Guid.NewGuid().ToString()" />
+                            <input type="hidden" name="OrderInfo" value="Thanh toán đặt hàng qua MoMo tại Steaker" />
+                            <button class="btn btn-success px-4 rounded-pill fw-bold" type="submit">Thanh toán MoMo</button>
+                        </form>
+                    </div>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-info btn-sm">Xem</a>
+                    <form asp-action="Delete" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@order.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                     </form>
                 </td>
             </tr>
