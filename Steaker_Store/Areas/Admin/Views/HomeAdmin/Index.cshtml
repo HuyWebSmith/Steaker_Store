@@ -20,6 +20,8 @@
                 <th>Phone</th>
                 <th>Email</th>
                 <th>Email Confirmed</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
             </tr>
         </thead>
         <tbody>
@@ -30,10 +32,26 @@
                     <td>@user.FullName</td>
                     <td>@(string.IsNullOrEmpty(user.PhoneNumber) ? "Unknown" : user.PhoneNumber)</td>
                     <td>@user.Email</td>
-                    <td>@(user.EmailConfirmed ? "✔" : "✘")</td> 
+                    <td>@(user.EmailConfirmed ? "✔" : "✘")</td>
+                    <td class="fw-bold @(user.IsBlocked ? "text-danger" : "text-success")">
+                        @(user.IsBlocked ? "Đã khóa" : "Hoạt động")
+                    </td>
+                    <td>
+                        @if (!user.IsBlocked)
+                        {
+                            <a href="/Admin/HomeAdmin/Block/@user.Id" class="btn btn-sm btn-danger">Khóa</a>
+                        }
+                        else
+                        {
+                            <a href="/Admin/HomeAdmin/Unblock/@user.Id" class="btn btn-sm btn-success">Mở khóa</a>
+                        }
+
+                    </td>
+
                 </tr>
             }
         </tbody>
+
     </table>
 
 </div>

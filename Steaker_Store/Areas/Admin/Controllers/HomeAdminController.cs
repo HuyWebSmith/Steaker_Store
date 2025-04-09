@@ -86,6 +86,25 @@ namespace Steaker_Store.Areas.Admin.Controllers
             return RedirectToAction("ManageRoles");
         }
 
+        public async Task<IActionResult> Block(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            user.IsBlocked = true;
+            await _userManager.UpdateAsync(user);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Unblock(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            user.IsBlocked = false;
+            await _userManager.UpdateAsync(user);
+            return RedirectToAction("Index");
+        }
 
 
     }

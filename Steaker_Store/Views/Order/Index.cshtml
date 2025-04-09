@@ -16,6 +16,7 @@
             <th>Địa chỉ giao hàng</th>
             <th>Ghi chú</th>
             <th>Trạng thái</th>
+            <th>Duyệt đơn</th>
             <th>Thanh toán</th>
             <th>Hành động</th> <!-- Added a new column for delete button -->
         </tr>
@@ -47,6 +48,16 @@
                     }
                 </td>
                 <td>
+                    @if (order.IsApproved)
+                    {
+                        <span class="badge bg-success">Đã duyệt</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Chưa duyệt</span>
+                    }
+                </td>
+                <td>
                     <div class="d-flex justify-content-center gap-3">
                         <form asp-controller="Payment" asp-action="CreatePaymentUrlVnpay" method="post" class="mb-3">
                             <input type="hidden" name="Name" value="@User.Identity.Name" />
@@ -70,7 +81,7 @@
                     <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-info btn-sm">Xem</a>
                     <form asp-action="Delete" method="post" class="d-inline">
                         <input type="hidden" name="id" value="@order.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                        <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-danger btn-sm">Hủy Đơn</a>
                     </form>
                 </td>
             </tr>

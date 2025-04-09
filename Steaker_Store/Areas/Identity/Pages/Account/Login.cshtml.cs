@@ -105,29 +105,33 @@ namespace Steaker_Store.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByEmailAsync(Input.Email);
+
+                // Kiểm tra nếu bị khóa
+                if (user != null && user.IsBlocked)
+                {
+                    ModelState.AddModelError(string.Empty, "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.");
+                    return Page();
+                }
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    // Lấy thông tin user từ database
-                    var user = await _userManager.FindByEmailAsync(Input.Email);
-                    if (user != null)
+                   
+                    // Kiểm tra nếu user có role "Admin"
+                    var isAdmin = await _signInManager.UserManager.IsInRoleAsync(user, "Admin");
+                    if (isAdmin)
                     {
-                        // Kiểm tra nếu user có role "Admin"
-                        var isAdmin = await _signInManager.UserManager.IsInRoleAsync(user, "Admin");
-                        if (isAdmin)
-                        {
-                            return LocalRedirect("/Admin/HomeAdmin/Index"); // Chuyển đến trang admin
-                        }
-
+                        return LocalRedirect("/Admin/HomeAdmin/Index"); // Chuyển đến trang admin
                     }
 
                     // Nếu không phải admin, chuyển về trang chủ

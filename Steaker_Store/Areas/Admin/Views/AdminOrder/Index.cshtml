@@ -12,19 +12,22 @@
         <tr>
             <th>Mã đơn</th>
             <th>Khách hàng</th>
-            <th>Ngày đặt</th> 
-            <th>Trạng thái</th>
+            <th>Ngày đặt</th>
+            <th>Trạng thái thanh toán</th>
+            <th>Trạng thái duyệt</th> <!-- Thêm trạng thái duyệt -->
             <th>Tổng tiền</th>
-            <th>Thao tác</th> <!-- Added a new column for delete button -->
+            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var order in Model)
         {
-            <tr>
+            <tr class="@(order.IsApproved ? "" : "table-warning")">
+                <!-- Tô màu nếu chưa duyệt -->
                 <td>@order.Id</td>
                 <td>@(order.ApplicationUser != null ? order.ApplicationUser.FullName : "Khách vãng lai")</td>
                 <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+
                 <td>
                     @switch (order.Status)
                     {
@@ -39,15 +42,31 @@
                             break;
                     }
                 </td>
+
+                <td>
+                    @if (order.IsApproved)
+                    {
+                        <span class="badge bg-success">Đã duyệt</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Chưa duyệt</span>
+                    }
+                </td>
+
                 <td>@order.TotalPrice.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
 
                 <td>
-                    <!-- Nút Xem: Điều hướng đến trang Chi tiết đơn hàng -->
                     <a href="/Admin/AdminOrder/Details/@order.Id" class="btn btn-info btn-sm">Xem</a>
 
-                    <a href="@Url.Action("Delete", "AdminOrder", new { id = order.Id })" class="btn btn-danger btn-sm">Xóa</a>
+                    @if (!order.IsApproved)
+                    {
+                        <form action="/Admin/AdminOrder/Approve/@order.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
+                        </form>
 
-
+                    }
                 </td>
             </tr>
         }

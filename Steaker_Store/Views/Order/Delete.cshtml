@@ -31,9 +31,9 @@
         </tr>
     </table>
 
-    <form asp-action="DeleteConfirmed" method="post">
+    <form asp-action="Delete" method="post">
         <input type="hidden" name="id" value="@Model.Id" />
-        <button type="submit" class="btn btn-danger">Xóa</button>
-        <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+        <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>

@@ -12,7 +12,7 @@ namespace Steaker_Store.Models
         public string?  Description { get; set; }
         public string? ImageUrl { get; set; }
         public List<MenuItemImage>? Images { get; set; }
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
         public Category? Category { get; set; }
     }
 }

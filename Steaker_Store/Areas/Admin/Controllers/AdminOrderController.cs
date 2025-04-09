@@ -42,34 +42,18 @@ namespace Steaker_Store.Areas.Admin.Controllers
             return View(order); // Trả về thông tin đơn hàng cho view Details
         }
 
-        public async Task<IActionResult> Delete(int id)
-        {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.Id == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return View(order);  // Hiển thị view xác nhận xóa
-        }
-
-        // POST: AdminOrder/Delete/{id}
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult Approve(int id)
         {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.Id == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            if (order == null) return NotFound();
 
-            _context.Orders.Remove(order); // Xóa đơn hàng khỏi cơ sở dữ liệu
-            await _context.SaveChangesAsync();
+            order.IsApproved = true;
+            order.ApprovedAt = DateTime.Now; // nếu có cột này
+            _context.SaveChanges();
 
-            return RedirectToAction(nameof(Index)); // Quay lại trang danh sách đơn hàng
+            return RedirectToAction("Index");
         }
 
     }
