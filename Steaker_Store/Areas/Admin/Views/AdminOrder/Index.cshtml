@@ -65,6 +65,16 @@
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
                         </form>
+                        
+
+                    }
+                    @if (order.IsApproved)
+                    {
+                        <form action="/Admin/AdminOrder/NoApprove/@order.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm">Hủy Duyệt</button>
+                        </form>
+                        
 
                     }
                 </td>

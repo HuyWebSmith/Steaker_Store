@@ -80,6 +80,9 @@ builder.Services.AddAuthentication()
 //Api VnPay
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 
+
+// Chat Hub
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -118,5 +121,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
+app.MapHub<ChatHub>("/chathub");
 app.Run();

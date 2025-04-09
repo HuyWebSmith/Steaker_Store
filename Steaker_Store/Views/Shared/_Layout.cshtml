@@ -13,7 +13,73 @@
     <!-- Bootstrap icons-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
     rel="stylesheet" />
-    
+    <style>
+        #chatSupportBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #28a745;
+            color: white;
+            font-size: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 60px;
+            z-index: 10000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+            #chatSupportBtn:hover {
+                background-color: #218838;
+            }
+
+        #chatDropdown {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10000;
+        }
+
+        #chatDropdownBtn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            font-size: 28px;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        #chatDropdownList {
+            display: none;
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+            #chatDropdownList a {
+                display: block;
+                padding: 10px 15px;
+                text-decoration: none;
+                color: black;
+                border-bottom: 1px solid #eee;
+            }
+
+                #chatDropdownList a:hover {
+                    background-color: #f0f0f0;
+                }
+
+    </style>
 </head>
 
 <body>
@@ -87,6 +153,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" asp-area="Admin" asp-controller="Categories" asp-action="Index">Category</a>
                                 </li>
+
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -162,6 +229,50 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Customer"))
+    {
+        <a href="/Chat?targetUser=@ViewBag.AdminEmail" id="chatSupportBtn" title="Chat với Admin">
+            <i class="fa-solid fa-comment-dots"></i>
+        </a>
+
+    }
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+    {
+        var customers = ViewBag.CustomerList as List<ApplicationUser>;
+
+        <div id="chatDropdown">
+            <button id="chatDropdownBtn" title="Chat với khách hàng">
+                <i class="fa-solid fa-comments"></i>
+            </button>
+            <div id="chatDropdownList" style="display: none;">
+                @if (customers != null && customers.Any())
+                {
+                    foreach (var customer in customers)
+                    {
+                        <a href="/Chat?targetUser=@customer.Email">💬 @customer.Email</a>
+                    }
+                }
+                else
+                {
+                    <p>Không có khách hàng.</p>
+                }
+            </div>
+        </div>
+    }
+    <script>
+        const btn = document.getElementById('chatDropdownBtn');
+        const list = document.getElementById('chatDropdownList');
+
+        btn.addEventListener('click', () => {
+            list.style.display = (list.style.display === 'block') ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function (e) {
+            if (!btn.contains(e.target) && !list.contains(e.target)) {
+                list.style.display = 'none';
+            }
+        });
+    </script>
 
 </body>
 

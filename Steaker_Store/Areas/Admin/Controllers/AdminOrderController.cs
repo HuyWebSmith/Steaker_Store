@@ -55,6 +55,19 @@ namespace Steaker_Store.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult NoApprove(int id)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == id);
+            if (order == null) return NotFound();
+
+            order.IsApproved = false;
+            order.ApprovedAt = DateTime.Now; // nếu có cột này
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
 
     }
 }

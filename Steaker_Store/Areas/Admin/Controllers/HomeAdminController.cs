@@ -89,20 +89,39 @@ namespace Steaker_Store.Areas.Admin.Controllers
         public async Task<IActionResult> Block(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null)
+            {
+                TempData["Error"] = "Người dùng không tồn tại.";
+                return RedirectToAction("Index");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Admin"))
+            {
+                TempData["Error"] = "Không thể khóa tài khoản Admin.";
+                return RedirectToAction("Index");
+            }
 
             user.IsBlocked = true;
             await _userManager.UpdateAsync(user);
+
+            TempData["Success"] = "Đã khóa tài khoản thành công.";
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Unblock(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null)
+            {
+                TempData["Error"] = "Người dùng không tồn tại.";
+                return RedirectToAction("Index");
+            }
 
             user.IsBlocked = false;
             await _userManager.UpdateAsync(user);
+
+            TempData["Success"] = "Đã mở khóa tài khoản thành công.";
             return RedirectToAction("Index");
         }
 

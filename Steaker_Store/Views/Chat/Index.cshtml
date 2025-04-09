@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "Chat";
+    var currentUser = ViewBag.CurrentUser as string;
+    var targetUser = ViewBag.TargetUser as string;
+}
+
+<style>
+    .chat-container {
+        max-width: 600px;
+        margin: auto;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+    }
+
+    .chat-header {
+        background: #198754;
+        color: white;
+        padding: 15px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        background: #f8f9fa;
+    }
+
+    .chat-message {
+        margin-bottom: 10px;
+    }
+
+        .chat-message.me {
+            text-align: right;
+        }
+
+        .chat-message .msg {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 70%;
+        }
+
+        .chat-message.me .msg {
+            background-color: #198754;
+            color: white;
+        }
+
+        .chat-message.other .msg {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+
+    .chat-input {
+        display: flex;
+        border-top: 1px solid #ccc;
+    }
+
+        .chat-input input {
+            flex: 1;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: #198754;
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            cursor: pointer;
+        }
+</style>
+
+<div class="chat-container">
+    <div class="chat-header">
+        💬 Chat với @currentUser ↔ @targetUser
+    </div>
+
+    <div id="chatBox" class="chat-messages"></div>
+    <div id="typingStatus" style="padding-left: 15px; font-style: italic; color: gray;"></div>
+
+    <div class="chat-input">
+        <input id="messageInput" placeholder="Nhập tin nhắn..." />
+        <button id="sendBtn">Gửi</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const currentUser = '@currentUser';
+        const targetUser = '@targetUser';
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub?targetUser=" + targetUser)
+            .build();
+
+        connection.on("ReceiveMessage", function (user, message) {
+            const chatBox = document.getElementById("chatBox");
+            const msgDiv = document.createElement("div");
+            msgDiv.classList.add("chat-message");
+            msgDiv.classList.add(user === currentUser ? "me" : "other");
+            msgDiv.innerHTML = `<div class="msg"><strong>${user === currentUser ? "Tôi" : user}:</strong> ${message}</div>`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Ẩn thông báo đang gõ khi có tin nhắn mới
+            document.getElementById("typingStatus").innerText = "";
+        });
+
+        connection.on("ShowTyping", function (fromUser) {
+            if (fromUser !== currentUser) {
+                const typingStatus = document.getElementById("typingStatus");
+                typingStatus.innerText = `${fromUser} đang gõ...`;
+
+                clearTimeout(typingStatus.timeoutId);
+                typingStatus.timeoutId = setTimeout(() => {
+                    typingStatus.innerText = "";
+                }, 3000);
+            }
+        });
+
+        connection.start().catch(err => console.error(err));
+
+        document.getElementById("sendBtn").addEventListener("click", function () {
+            const msgInput = document.getElementById("messageInput");
+            const msg = msgInput.value.trim();
+            if (msg.length > 0) {
+                connection.invoke("SendMessage", targetUser, msg);
+                msgInput.value = "";
+            }
+        });
+
+        // Gửi sự kiện đang gõ
+        let typingTimeout;
+        const msgInput = document.getElementById("messageInput");
+        msgInput.addEventListener("input", () => {
+            connection.invoke("Typing", targetUser);
+        });
+    </script>
+}
+
