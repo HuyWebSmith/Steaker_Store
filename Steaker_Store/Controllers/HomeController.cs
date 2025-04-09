@@ -13,19 +13,21 @@ namespace Steaker_Store.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString)
         {
-            // Kiểm tra _context trước khi truy vấn
             if (_context == null)
             {
                 throw new Exception("Database context is null. Check if it is initialized properly.");
             }
 
-            var menuItems = await _context.Menus
-                .Include(m => m.Images) // Load danh sách ảnh
-                .ToListAsync();
+            var menuItemsQuery = _context.Menus.Include(m => m.Images).AsQueryable();
 
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                menuItemsQuery = menuItemsQuery.Where(m => m.Name.Contains(searchString));
+            }
 
+            var menuItems = await menuItemsQuery.ToListAsync();
             return View(menuItems);
         }
     }
